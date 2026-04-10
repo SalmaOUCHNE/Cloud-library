@@ -1,0 +1,329 @@
+# LibraCloud
+# 🚀 Cloud Library Management System
+
+Application web **fullstack moderne** de gestion de bibliothèque, conçue avec une architecture scalable, sécurisée et prête pour la production.
+
+---
+
+## 📌 Description
+
+Cloud Library est une plateforme permettant de :
+
+* 📚 Consulter un catalogue de livres (mode visiteur inclus)
+* 👤 Gérer les utilisateurs avec rôles
+* 🗂️ Gérer les livres et catégories
+* 📊 Suivre le stock en temps réel
+* 🔐 Authentifier les utilisateurs de manière sécurisée
+
+---
+
+## 🎯 Objectifs du projet
+
+* Concevoir une architecture **Frontend / Backend / Database**
+* Implémenter une API REST sécurisée
+* Gérer les rôles et permissions
+* Assurer une bonne expérience utilisateur (UI/UX + animations)
+
+---
+
+## 🧱 Stack technique
+
+### 🎨 Frontend
+
+* React (Vite)
+* React Router DOM
+* Zustand (gestion de session)
+* Axios (HTTP + interceptor)
+* TailwindCSS
+* Framer Motion (animations)
+
+### ⚙️ Backend
+
+* Node.js + Express
+* MongoDB Atlas
+* Mongoose
+* JWT (Access + Refresh Tokens)
+* Bcrypt (hash mot de passe)
+
+### ☁️ DevOps
+
+* Docker (optionnel)
+* GitHub Actions (CI/CD)
+
+---
+
+## 🏗️ Architecture globale
+
+```mermaid
+flowchart LR
+  U[Utilisateur]
+  FE[Frontend React]
+  BE[Backend Express API]
+  DB[(MongoDB Atlas)]
+
+  U -->|HTTP| FE
+  FE -->|REST API| BE
+  BE -->|Mongoose| DB
+```
+
+---
+
+## 🔄 Flux de communication
+
+### 📡 Vue générale
+
+```mermaid
+sequenceDiagram
+  participant U as Utilisateur
+  participant FE as Frontend
+  participant BE as Backend
+  participant DB as MongoDB
+
+  U->>FE: Action utilisateur
+  FE->>BE: Requête HTTP /api/...
+  BE->>DB: Lecture/Ecriture
+  DB-->>BE: Données
+  BE-->>FE: JSON (response)
+  FE-->>U: UI mise à jour
+```
+
+---
+
+### 🔐 Flux authentification (JWT + Refresh)
+
+```mermaid
+sequenceDiagram
+  participant U as Utilisateur
+  participant FE as Frontend
+  participant BE as Backend
+
+  U->>FE: Login (email, mot de passe)
+  FE->>BE: POST /api/auth/login
+  BE-->>FE: accessToken + refreshToken
+  FE->>FE: Stockage session (Zustand)
+
+  FE->>BE: Requête protégée
+  BE-->>FE: 401 Token expiré
+
+  FE->>BE: POST /api/auth/refresh
+  BE-->>FE: Nouveau accessToken
+
+  FE->>BE: Rejoue requête
+  BE-->>FE: Succès
+```
+
+---
+
+### 📚 Flux gestion des livres
+
+```mermaid
+sequenceDiagram
+  participant Admin
+  participant FE as Frontend
+  participant BE as Backend
+  participant DB as MongoDB
+
+  Admin->>FE: Ajouter un livre
+  FE->>BE: POST /api/books
+  BE->>DB: Insert book
+  DB-->>BE: OK
+  BE-->>FE: Livre ajouté
+```
+
+---
+
+### 📖 Flux consultation publique
+
+```mermaid
+sequenceDiagram
+  participant Visitor
+  participant FE
+  participant BE
+  participant DB
+
+  Visitor->>FE: Consulter livres
+  FE->>BE: GET /api/books/public
+  BE->>DB: Get active books
+  DB-->>BE: Liste
+  BE-->>FE: JSON
+```
+
+---
+
+## 📁 Structure du projet
+
+```bash
+cloud-library/
+│
+├── Backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── utils/
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── package.json
+│   └── .env
+│
+├── Frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── store/
+│   │   ├── router/
+│   │   └── styles/
+│   ├── package.json
+│   └── .env
+│
+└── README.md
+```
+
+---
+
+## 🗃️ Modèles de données
+
+### 👤 User
+
+* nom
+* email (unique)
+* motDePasse (hashé)
+* role (`ADMIN`, `BIBLIOTHECAIRE`, `MEMBRE`)
+* isActive
+
+### 📚 Book
+
+* titre
+* auteur
+* isbn
+* categorie
+* quantite
+* exemplairesDisponibles
+
+### 🗂️ Category
+
+* nom
+* description
+* isActive
+
+---
+
+## 🔐 Sécurité
+
+* JWT Authentication
+* Refresh Token automatique
+* Password hashé (bcrypt)
+* Middleware `protect`
+* Middleware `authorizeRoles`
+* Routes sécurisées
+
+---
+
+## 📡 API principale
+
+### Auth
+
+* `POST /api/auth/register`
+* `POST /api/auth/login`
+* `POST /api/auth/refresh`
+
+### Books
+
+* `GET /api/books/public`
+* `POST /api/books`
+
+### Users
+
+* `GET /api/users`
+* `PUT /api/users/:id`
+
+---
+
+## ⚙️ Installation
+
+### 🔹 Backend
+
+```bash
+cd Backend
+npm install
+npm run dev
+```
+
+---
+
+### 🔹 Frontend
+
+```bash
+cd Frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🔑 Variables d’environnement
+
+### Backend
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_atlas_url
+JWT_SECRET=your_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+```
+
+### Frontend
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+---
+
+## 🎨 UI / UX
+
+* Design moderne (Violet / Noir / Blanc)
+* Animations fluides (Framer Motion)
+* Responsive design
+* Expérience utilisateur optimisée
+
+---
+
+## 🚀 Déploiement
+
+### ✔ Checklist
+
+* Backend fonctionnel ✅
+* MongoDB connecté ✅
+* Front connecté API ✅
+* Auth JWT fonctionnelle ✅
+
+---
+
+## 🧪 Tests
+
+```bash
+npm test
+```
+
+---
+
+## 👨‍💻 Auteur
+
+* Salma Ouchne
+
+---
+
+## ⭐ Conclusion
+
+Ce projet démontre :
+
+* Une architecture fullstack moderne
+* Une API sécurisée avec JWT
+* Une interface utilisateur moderne
+* Une bonne séparation des responsabilités
+
+---
